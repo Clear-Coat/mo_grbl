@@ -1,0 +1,10 @@
+{
+  "files.associations": {
+    "cstddef": "c",
+    "grbl.h": "c",
+    "__locale": "c",
+    "locale": "c",
+    "string": "c",
+    "mo.h": "c"
+  }
+}
