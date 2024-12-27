@@ -95,6 +95,20 @@ uint8_t limits_get_state()
 }
 
 
+uint8_t pinch_roller_get_state()
+{
+  if (MACHINE_TYPE == BAMBOO) 
+  {
+    // Check PC3 state
+    if (PINC & (1 << PINC3)) 
+    {
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
 // This is the Limit Pin Change Interrupt, which handles the hard limit feature. A bouncing
 // limit switch can cause a lot of problems, like false readings and multiple interrupt calls.
 // If a switch is triggered at all, something bad has happened and treat it as such, regardless

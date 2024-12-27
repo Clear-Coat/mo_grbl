@@ -32,6 +32,8 @@ void limits_disable();
 // Returns limit state as a bit-wise uint8 variable.
 uint8_t limits_get_state();
 
+uint8_t pinch_roller_get_state();
+
 // Perform one portion of the homing cycle based on the input settings.
 void limits_go_home(uint8_t cycle_mask);
 

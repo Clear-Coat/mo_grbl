@@ -91,6 +91,8 @@ int main(void)
     coolant_init();
     limits_init();
     probe_init();
+    vcm_init();
+    motor_spi_init();
     plan_reset(); // Clear block buffer and planner variables
     st_reset(); // Clear stepper subsystem variables.
 

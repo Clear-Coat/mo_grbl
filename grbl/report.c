@@ -366,11 +366,35 @@ void report_execute_startup_message(char *line, uint8_t status_code)
   report_status_message(status_code);
 }
 
+const char* machine_type_to_string(int type) {
+    switch (type) {
+        case RCMINI:
+            return "RCMINI";
+        case BAMBOO:
+            return "BAMBOO";
+        default:
+            return "UNKNOWN";
+    }
+}
+
+void print_version() {
+    // Create a buffer for the resulting string
+    char versionStr[100];  // Make sure the buffer is large enough
+
+    // Get the machine name using the switch function
+    const char* MACHINE_NAME = machine_type_to_string(MACHINE_TYPE);
+
+    // Concatenate the parts into the buffer
+    snprintf(versionStr, sizeof(versionStr), "[VER:%s.%s:%s", GRBL_VERSION, GRBL_VERSION_BUILD, MACHINE_NAME);
+
+    printString(versionStr);
+}
+
+
 // Prints build info line
 void report_build_info(char *line)
 {
-  printPgmString(PSTR("[VER:" GRBL_VERSION "." GRBL_VERSION_BUILD ":"));
-  printString(line);
+  print_version();
   report_util_feedback_line_feed();
   printPgmString(PSTR("[OPT:")); // Generate compile-time build option list
   #ifdef VARIABLE_SPINDLE
@@ -568,7 +592,8 @@ void report_realtime_status()
     uint8_t lim_pin_state = limits_get_state();
     uint8_t ctrl_pin_state = system_control_get_state();
     uint8_t prb_pin_state = probe_get_state();
-    if (lim_pin_state | ctrl_pin_state | prb_pin_state) {
+    uint8_t pinch_roller_state = pinch_roller_get_state();
+    if ((lim_pin_state | ctrl_pin_state | prb_pin_state) || pinch_roller_state) {
       printPgmString(PSTR("|Pn:"));
       if (prb_pin_state) { serial_write('P'); }
       if (lim_pin_state) {
@@ -586,6 +611,7 @@ void report_realtime_status()
           if (bit_istrue(lim_pin_state,bit(X_AXIS))) { serial_write('X'); }
           if (bit_istrue(lim_pin_state,bit(Y_AXIS))) { serial_write('Y'); }
           if (bit_istrue(lim_pin_state,bit(Z_AXIS))) { serial_write('Z'); }
+          if (pinch_roller_state) { serial_write('R'); }
         #endif
       }
       if (ctrl_pin_state) {

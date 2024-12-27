@@ -22,7 +22,10 @@
 #define grbl_h
 
 // Grbl versioning system
-#define GRBL_VERSION "1.1h"
+#ifndef GRBL_VERSION
+#error "Must define GRBL_VERSION in compiler options"
+#endif
+
 #define GRBL_VERSION_BUILD "20190830"
 
 // Define standard libraries used by Grbl.
@@ -60,6 +63,8 @@
 #include "spindle_control.h"
 #include "stepper.h"
 #include "jog.h"
+#include "vcm.h"
+#include "spi.h"
 
 // ---------------------------------------------------------------------------------------
 // COMPILE-TIME ERROR CHECKING OF DEFINE VALUES:
