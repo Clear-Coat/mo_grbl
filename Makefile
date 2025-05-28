@@ -5,13 +5,6 @@ BUILD_DIR = build
 BOARD = arduino:avr:uno
 VERSION = 1.2h
 
-# Cross-platform port detection
-ifeq ($(OS),Windows_NT)
-	PORT = $(shell powershell -Command "Get-WmiObject -Class Win32_SerialPort | Where-Object {$$_.Description -like '*Arduino*' -or $$_.Description -like '*USB*'} | Select-Object -First 1 -ExpandProperty DeviceID" 2>nul)
-else
-	PORT = $(shell ls /dev/cu.usbmodem* 2>/dev/null | head -n 1)
-endif
-
 # Default build target
 .PHONY: all
 all: build_rcmini build_bamboo
@@ -41,21 +34,27 @@ build_bamboo:
 # Flash RC Mini firmware
 .PHONY: flash_rcmini
 flash_rcmini: build_rcmini
-ifdef PORT
-	@arduino-cli upload -p $(PORT) --fqbn $(BOARD) --input-dir $(BUILD_DIR)/rcmini --verbose
-	@echo "Flashed RC Mini firmware to $(PORT)"
+ifeq ($(OS),Windows_NT)
+	@PORT=$$(powershell -Command 'Get-WmiObject Win32_SerialPort | Where-Object { $$_.Description -like "*Arduino*" } | Select-Object -First 1 -ExpandProperty DeviceID'); \
+	arduino-cli upload -p $$PORT --fqbn $(BOARD) --input-dir $(BUILD_DIR)/rcmini --verbose && \
+	echo "Flashed RC Mini firmware to $$PORT"
 else
-	@echo "Error: Arduino not found"
+	@PORT=$$(ls /dev/cu.usbmodem* 2>/dev/null | head -n 1); \
+	arduino-cli upload -p $$PORT --fqbn $(BOARD) --input-dir $(BUILD_DIR)/rcmini --verbose && \
+	echo "Flashed RC Mini firmware to $$PORT"
 endif
 
 # Flash Bamboo firmware
 .PHONY: flash_bamboo
 flash_bamboo: build_bamboo
-ifdef PORT
-	@arduino-cli upload -p $(PORT) --fqbn $(BOARD) --input-dir $(BUILD_DIR)/bamboo --verbose
-	@echo "Flashed Bamboo firmware to $(PORT)"
+ifeq ($(OS),Windows_NT)
+	@PORT=$$(powershell -Command 'Get-WmiObject Win32_SerialPort | Where-Object { $$_.Description -like "*Arduino*" } | Select-Object -First 1 -ExpandProperty DeviceID'); \
+	arduino-cli upload -p $$PORT --fqbn $(BOARD) --input-dir $(BUILD_DIR)/bamboo --verbose && \
+	echo "Flashed Bamboo firmware to $$PORT"
 else
-	@echo "Error: Arduino not found"
+	@PORT=$$(ls /dev/cu.usbmodem* 2>/dev/null | head -n 1); \
+	arduino-cli upload -p $$PORT --fqbn $(BOARD) --input-dir $(BUILD_DIR)/bamboo --verbose && \
+	echo "Flashed Bamboo firmware to $$PORT"
 endif
 
 # Clean the build files
