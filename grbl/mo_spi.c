@@ -43,6 +43,15 @@ void SPI_write(uint8_t cs_pin, uint8_t addr, uint8_t data) {
 }
 
 uint8_t SPI_read(uint8_t cs_pin, uint8_t addr) {
+    // ? 0 standard frame
+    // ? 1 << 14 = 0100000000000000
+    // ? doc says 0 for standard frame for first bit
+    // ? 0x3F = 00111111, last 6 bits are the address
+    // ? Mask the input address with 0x3F to get the last 6 bits
+    // ? Shift them to the left 8 bits so would be 01<address bits>
+    // ? then OR operation with the 0100000000000000
+    // ? output => 01<address bits>0000000000000000
+    // ? need to send second frame
     uint16_t frame = (1 << 14) | ((addr & 0x3F) << 8);
     
     PORTC &= ~(1 << cs_pin);
@@ -51,7 +60,8 @@ uint8_t SPI_read(uint8_t cs_pin, uint8_t addr) {
     SPDR = frame >> 8;
     while(!(SPSR & (1 << SPIF)));
     
-    SPDR = frame & 0xFF;
+    // ? Should be empty frame
+    SPDR = 0b00000000;
     while(!(SPSR & (1 << SPIF)));
     
     _delay_us(1);  // Small delay before reading
