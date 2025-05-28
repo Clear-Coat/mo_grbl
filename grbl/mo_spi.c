@@ -29,6 +29,8 @@ void SPI_init() {
 }
 
 void SPI_write(uint8_t cs_pin, uint8_t addr, uint8_t data) {
+    // ? First frame should be 00<address bits>
+    // ? Second frame should be all data bits
     uint16_t frame = ((addr & 0x3F) << 8) | data;
     
     PORTC &= ~(1 << cs_pin);
@@ -36,6 +38,8 @@ void SPI_write(uint8_t cs_pin, uint8_t addr, uint8_t data) {
     SPDR = frame >> 8;
     while(!(SPSR & (1 << SPIF)));
     
+    // ? Mask out high byte, 0xFF = 0000000011111111
+    // ? Send low byte
     SPDR = frame & 0xFF;
     while(!(SPSR & (1 << SPIF)));
     
