@@ -68,7 +68,6 @@ int main(void)
 
   vcm_init();
   motor_spi_init();
-  PORTD |= (1 << PORTD7);
 
   // Grbl initialization loop upon power-up or a system abort. For the latter, all processes
   // will return to this loop to be cleanly re-initialized.
