@@ -6,6 +6,7 @@ void vcm_init()
     {
         DDRD |= (1 << DDD7);
         // Set pin 7 to HIGH
-        PORTD |= (1 << PORTD7);
+        // PORTD |= (1 << PORTD7);
+        PORTD &= ~(1 << PORTD7);
     }
 }
