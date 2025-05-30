@@ -38,14 +38,14 @@ volatile uint8_t sys_rt_exec_accessory_override; // Global realtime executor bit
 
 int main(void)
 {
- // ? Set pin 7 to output
-  DDRD |= (1 << DDD4);
-  // ? Set pin 7 to LOW
-  PORTD &= ~(1 << PORTD4);
-  // ? wait 5ms
-  delay_ms(5);
-  // ? Set pin 7 to HIGH
-  PORTD |= (1 << PORTD4);
+//  // ? Set pin 7 to output
+//   DDRD |= (1 << DDD4);
+//   // ? Set pin 7 to LOW
+//   PORTD &= ~(1 << PORTD4);
+//   // ? wait 5ms
+//   delay_ms(5);
+//   // ? Set pin 7 to HIGH
+//   PORTD |= (1 << PORTD4);
   
   // Initialize system upon power-up.
   serial_init();   // Setup serial baud rate and interrupts
