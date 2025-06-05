@@ -20,6 +20,18 @@ void debug_print_read(uint8_t addr, uint8_t data) {
 }
 #endif
 
+void spi_disable(void) {
+    // Disable SPI by clearing the SPE (SPI Enable) bit in SPCR
+    SPCR &= ~(1 << SPE);
+    
+    // Optional: Set SPI pins as inputs to save power
+    // SS (PB2), MOSI (PB3), MISO (PB4), SCK (PB5) on ATmega328P
+    DDRB &= ~((1 << PB2) | (1 << PB3) | (1 << PB4) | (1 << PB5));
+    
+    // Optional: Disable internal pull-ups on SPI pins
+    PORTB &= ~((1 << PB2) | (1 << PB3) | (1 << PB4) | (1 << PB5));
+}
+
 void SPI_init() {
     // ? Set PB4 to input
     DDRB &= ~(1 << PB4);
@@ -115,4 +127,6 @@ void motor_spi_init() {
         SPI_read(cs, 0x04);
         SPI_read(cs, 0x05);
     }
+
+    spi_disable();
 }
