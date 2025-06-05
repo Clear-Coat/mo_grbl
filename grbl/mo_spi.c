@@ -115,7 +115,4 @@ void motor_spi_init() {
         SPI_read(cs, 0x04);
         SPI_read(cs, 0x05);
     }
-
-    // ? Set PB3 to low
-    PORTB &= ~(1 << PB3);
 }
