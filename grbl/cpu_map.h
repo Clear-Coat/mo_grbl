@@ -101,7 +101,7 @@
     // Define flood and mist coolant enable output pins.
     #define COOLANT_FLOOD_DDR   DDRC
     #define COOLANT_FLOOD_PORT  PORTC
-    #define COOLANT_FLOOD_BIT   3  // Uno Analog Pin 3
+    #define COOLANT_FLOOD_BIT   5  // Uno Analog Pin 3
     #define COOLANT_MIST_DDR   DDRC
     #define COOLANT_MIST_PORT  PORTC
     #define COOLANT_MIST_BIT   4  // Uno Analog Pin 4
