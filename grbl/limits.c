@@ -99,6 +99,8 @@ uint8_t pinch_roller_get_state()
 {
   if (MACHINE_TYPE == BAMBOO) 
   {
+    // ? Set PC3 to input
+    DDRC &= ~(1 << DDC3);
     // Check PC3 state
     if (PINC & (1 << PINC3)) 
     {
