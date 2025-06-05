@@ -38,15 +38,6 @@ volatile uint8_t sys_rt_exec_accessory_override; // Global realtime executor bit
 
 int main(void)
 {
-//  // ? Set pin 7 to output
-//   DDRD |= (1 << DDD4);
-//   // ? Set pin 7 to LOW
-//   PORTD &= ~(1 << PORTD4);
-//   // ? wait 5ms
-//   delay_ms(5);
-//   // ? Set pin 7 to HIGH
-//   PORTD |= (1 << PORTD4);
-  
   // Initialize system upon power-up.
   serial_init();   // Setup serial baud rate and interrupts
   settings_init(); // Load Grbl settings from EEPROM
@@ -75,8 +66,8 @@ int main(void)
     if (bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)) { sys.state = STATE_ALARM; }
   #endif
 
-  vcm_init();
   motor_spi_init();
+  vcm_init();
 
   // Grbl initialization loop upon power-up or a system abort. For the latter, all processes
   // will return to this loop to be cleanly re-initialized.

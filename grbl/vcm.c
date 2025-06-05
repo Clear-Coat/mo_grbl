@@ -2,6 +2,7 @@
 
 void vcm_init()
 {
+    
     if (MACHINE_TYPE == BAMBOO) 
     {
         DDRD |= (1 << DDD7);

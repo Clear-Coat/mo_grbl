@@ -21,7 +21,11 @@ void debug_print_read(uint8_t addr, uint8_t data) {
 #endif
 
 void SPI_init() {
-    DDRB |= (1 << PB3) | (1 << PB5) | (1 << PB2);
+    // ? Set PB4 to input
+    DDRB &= ~(1 << PB4);
+    // ? Set PB3, PB5, PB2 to output
+    // ? (1 << PB3) | 
+    DDRB |= (1 << PB5) | (1 << PB2);
     DDRC |= (1 << CS1_PIN) | (1 << CS2_PIN);
     PORTC |= (1 << CS1_PIN) | (1 << CS2_PIN);
     // Slower SPI clock: SPR1=1, SPR0=1 = fosc/128
@@ -33,6 +37,7 @@ void SPI_write(uint8_t cs_pin, uint8_t addr, uint8_t data) {
     // ? Second frame should be all data bits
     uint16_t frame = ((addr & 0x3F) << 8) | data;
     
+    // ? Set CS pin low
     PORTC &= ~(1 << cs_pin);
     
     SPDR = frame >> 8;
@@ -43,6 +48,7 @@ void SPI_write(uint8_t cs_pin, uint8_t addr, uint8_t data) {
     SPDR = frame & 0xFF;
     while(!(SPSR & (1 << SPIF)));
     
+    // ? Set CS pin high
     PORTC |= (1 << cs_pin);
 }
 
