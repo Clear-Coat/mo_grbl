@@ -24,8 +24,7 @@ void SPI_init() {
     // ? Set PB4 to input
     DDRB &= ~(1 << PB4);
     // ? Set PB3, PB5, PB2 to output
-    // ? (1 << PB3) | 
-    DDRB |= (1 << PB5) | (1 << PB2);
+    DDRB |= (1 << PB3) | (1 << PB5) | (1 << PB2);
     DDRC |= (1 << CS1_PIN) | (1 << CS2_PIN);
     PORTC |= (1 << CS1_PIN) | (1 << CS2_PIN);
     // Slower SPI clock: SPR1=1, SPR0=1 = fosc/128
@@ -116,4 +115,7 @@ void motor_spi_init() {
         SPI_read(cs, 0x04);
         SPI_read(cs, 0x05);
     }
+
+    // ? Set PB3 to low
+    PORTB &= ~(1 << PB3);
 }
