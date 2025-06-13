@@ -13,9 +13,15 @@ void debug_print_read(uint8_t addr, uint8_t data) {
     serial_write((addr < 10) ? ('0' + addr) : ('A' + addr - 10));
     serial_write(']');
     serial_write('=');
-    if (data < 16) serial_write('0');
-    serial_write((data >> 4) < 10 ? ('0' + (data >> 4)) : ('A' + (data >> 4) - 10));
-    serial_write((data & 0xF) < 10 ? ('0' + (data & 0xF)) : ('A' + (data & 0xF) - 10));
+
+    // Print data as raw hex
+    uint8_t *data_ptr = &data;
+    for (int i = 0; i < sizeof(data); i++) {
+        uint8_t byte = *(data_ptr + i);
+        if (byte < 16) serial_write('0');
+        serial_write((byte >> 4) < 10 ? ('0' + (byte >> 4)) : ('A' + (byte >> 4) - 10));
+        serial_write((byte & 0xF) < 10 ? ('0' + (byte & 0xF)) : ('A' + (byte & 0xF) - 10));
+    }
     serial_write('\n');
 }
 #endif
@@ -63,52 +69,49 @@ void SPI_write(uint8_t cs_pin, uint8_t addr, uint8_t data) {
     PORTC |= (1 << cs_pin);
 }
 
-uint8_t SPI_read(uint8_t cs_pin, uint8_t addr) {
-    // ? 0 standard frame
-    // ? 1 << 14 = 0100000000000000
-    // ? doc says 0 for standard frame for first bit
-    // ? 0x3F = 00111111, last 6 bits are the address
-    // ? Mask the input address with 0x3F to get the last 6 bits
-    // ? Shift them to the left 8 bits so would be 01<address bits>
-    // ? then OR operation with the 0100000000000000
-    // ? output => 01<address bits>0000000000000000
-    // ? need to send second frame
-    uint16_t frame = (1 << 14) | ((addr & 0x3F) << 8);
-    
+uint16_t SPI_read(uint8_t cs_pin, uint8_t addr) {
+    uint16_t frame = (1 << 14) | ((addr & 0x3F) << 8);  // W0=1 (read)
+
     PORTC &= ~(1 << cs_pin);
     _delay_us(1);  // CS setup time
-    
+
     SPDR = frame >> 8;
-    while(!(SPSR & (1 << SPIF)));
-    
-    // ? Should be empty frame
-    SPDR = 0b00000000;
-    while(!(SPSR & (1 << SPIF)));
-    
-    _delay_us(1);  // Small delay before reading
-    
-    SPDR = 0;
-    while(!(SPSR & (1 << SPIF)));
-    uint8_t status = SPDR;  // Status byte
-    
-    SPDR = 0;
-    while(!(SPSR & (1 << SPIF)));
-    uint8_t data = SPDR;    // Data byte
-    
-    _delay_us(1);  // CS hold time
+    while (!(SPSR & (1 << SPIF)));
+
+    uint8_t high = SPDR;
+
+    SPDR = frame & 0xFF;
+    while (!(SPSR & (1 << SPIF)));
+
+    uint8_t low = SPDR;
+
     PORTC |= (1 << cs_pin);
-    
+    _delay_us(1);  // CS hold time
+
+    uint16_t response = (high << 8) | low;
+
     #ifdef DEBUG_SPI
-    debug_print_read(addr, data);
-    // Also print status for debugging
+    serial_write('R'); serial_write('[');
+    if (addr < 16) serial_write('0');
+    serial_write((addr < 10) ? ('0' + addr) : ('A' + addr - 10));
+    serial_write(']');
+    serial_write('=');
+    uint8_t data = response & 0xFF;
+    uint8_t status = (response >> 8) & 0xFF;
+
+    serial_write((data >> 4) < 10 ? ('0' + (data >> 4)) : ('A' + (data >> 4) - 10));
+    serial_write((data & 0xF) < 10 ? ('0' + (data & 0xF)) : ('A' + (data & 0xF) - 10));
+    serial_write(' ');
+
     serial_write('S'); serial_write('=');
     serial_write((status >> 4) < 10 ? ('0' + (status >> 4)) : ('A' + (status >> 4) - 10));
     serial_write((status & 0xF) < 10 ? ('0' + (status & 0xF)) : ('A' + (status & 0xF) - 10));
-    serial_write(' ');
+    serial_write('\n');
     #endif
-    
-    return data;
+
+    return response;
 }
+
 
 void motor_spi_init() {
     if (MACHINE_TYPE != BAMBOO) return;
