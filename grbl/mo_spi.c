@@ -124,11 +124,14 @@ void motor_spi_init() {
         SPI_write(cs, 0x04, 0xCF);
         _delay_ms(1);
         SPI_write(cs, 0x05, 0x06);
+        _delay_ms(1);
+        SPI_write(cs, 0x0C, 0x11);
         _delay_ms(5);  // Longer delay after write
         
         // Then read back to verify
         SPI_read(cs, 0x04);
         SPI_read(cs, 0x05);
+        SPI_read(cs, 0x0C);
     }
 
     spi_disable();
