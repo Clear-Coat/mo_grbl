@@ -3,7 +3,7 @@
 #define CS1_PIN PC0
 #define CS2_PIN PC1
 
-#define DEBUG_SPI
+// #define DEBUG_SPI
 
 #ifdef DEBUG_SPI
 void debug_print_read(uint8_t addr, uint8_t data) {
