@@ -20,6 +20,9 @@
 
 #include "grbl.h"
 
+// Serial connection status for motor control
+volatile uint8_t sys_serial_connected = 1;        // Flag indicating serial connection status (default ON after reset)
+static uint16_t serial_idle_counter = 0;          // Counter for serial inactivity detection
 
 void system_init()
 {
@@ -31,6 +34,30 @@ void system_init()
   #endif
   CONTROL_PCMSK |= CONTROL_MASK;  // Enable specific pins of the Pin Change Interrupt
   PCICR |= (1 << CONTROL_INT);   // Enable Pin Change Interrupt
+  
+  // Initialize serial connection status - motors enabled after reset
+  sys_serial_connected = 1;  // Set to connected after reset (serial connection triggers reset)
+  serial_idle_counter = 0;
+}
+
+// Check serial connection status by monitoring UART activity
+void system_check_serial_connection()
+{
+  // Check if we have received data recently or if there's data waiting
+  if (serial_get_rx_buffer_count() > 0 || serial_get_tx_buffer_count() > 0) {
+    // Reset counter when there's serial activity (RX or TX)
+    serial_idle_counter = 0;
+    sys_serial_connected = 1;
+  } else {
+    // Increment idle counter only when both RX and TX are idle
+    serial_idle_counter++;
+    
+    // Much more responsive - disconnect after ~2-3 seconds of complete silence
+    // This should detect when serial terminal is closed fairly quickly
+    if (serial_idle_counter > 3000) {
+      sys_serial_connected = 0;
+    }
+  }
 }
 
 
