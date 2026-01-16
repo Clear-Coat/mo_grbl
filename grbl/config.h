@@ -55,7 +55,7 @@ typedef enum {
 #define SERIAL_DISCONNECT_TIMEOUT 1000000
 
 // Enable debug message when motors are disabled due to serial disconnect
-#define DEBUG_SERIAL_DISCONNECT
+// #define DEBUG_SERIAL_DISCONNECT
 #define BAUD_RATE 115200
 
 // Define realtime command special characters. These characters are 'picked-off' directly from the
