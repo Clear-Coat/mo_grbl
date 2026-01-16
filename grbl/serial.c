@@ -135,6 +135,19 @@ uint8_t serial_read()
     if (tail == RX_RING_BUFFER) { tail = 0; }
     serial_rx_buffer_tail = tail;
 
+    // Reset idle counter on any received data
+    serial_idle_counter = 0;
+    
+    // Data received - mark serial as connected and enable motors immediately
+    if (!sys_serial_connected) {
+      sys_serial_connected = 1;
+      if (bit_istrue(settings.flags, BITFLAG_INVERT_ST_ENABLE)) { 
+        STEPPERS_DISABLE_PORT |= (1 << STEPPERS_DISABLE_BIT); 
+      } else { 
+        STEPPERS_DISABLE_PORT &= ~(1 << STEPPERS_DISABLE_BIT); 
+      }
+    }
+
     return data;
   }
 }

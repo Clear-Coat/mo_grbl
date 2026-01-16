@@ -223,12 +223,12 @@ static st_prep_t prep;
 // enabled. Startup init and limits call this function but shouldn't start the cycle.
 void st_wake_up()
 {
-  // Enable stepper drivers only if serial connection is active.
-  if (sys_serial_connected) {
+  // Enable stepper drivers if serial connected OR during homing (homing must always work)
+  if (sys_serial_connected || sys.state == STATE_HOMING) {
     if (bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)) { STEPPERS_DISABLE_PORT |= (1<<STEPPERS_DISABLE_BIT); }
     else { STEPPERS_DISABLE_PORT &= ~(1<<STEPPERS_DISABLE_BIT); }
   } else {
-    // Disable steppers when no serial connection
+    // Disable steppers when no serial connection (and not homing)
     if (bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)) { STEPPERS_DISABLE_PORT &= ~(1<<STEPPERS_DISABLE_BIT); }
     else { STEPPERS_DISABLE_PORT |= (1<<STEPPERS_DISABLE_BIT); }
   }
@@ -260,12 +260,12 @@ void st_go_idle()
   TCCR1B = (TCCR1B & ~((1<<CS12) | (1<<CS11))) | (1<<CS10); // Reset clock to no prescaling.
   busy = false;
 
-  // Set stepper driver idle state based on serial connection status.
+  // Set stepper driver idle state based on serial connection and system state.
   bool pin_state = false; // Keep enabled by default
   
-  // Disable steppers if no serial connection, or if in alarm/sleep state (but not during homing)
-  if (!sys_serial_connected || 
-      ((sys_rt_exec_alarm || sys.state == STATE_SLEEP) && sys.state != STATE_HOMING)) {
+  // Disable steppers if disconnected or in alarm/sleep, but NEVER during homing
+  if (sys.state != STATE_HOMING && 
+      (!sys_serial_connected || sys_rt_exec_alarm || sys.state == STATE_SLEEP)) {
     pin_state = true; // Override. Disable steppers.
   }
   if (bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)) { pin_state = !pin_state; } // Apply pin invert.

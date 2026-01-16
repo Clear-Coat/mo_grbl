@@ -161,7 +161,8 @@ extern volatile uint8_t sys_rt_exec_motion_override;    // Global realtime execu
 extern volatile uint8_t sys_rt_exec_accessory_override; // Global realtime executor bitflag variable for spindle/coolant overrides.
 
 // Serial connection status for motor control
-extern volatile uint8_t sys_serial_connected; // Flag indicating serial connection status
+extern volatile uint8_t sys_serial_connected;   // Flag indicating serial connection status
+extern volatile uint32_t serial_idle_counter;   // Counter for serial inactivity detection
 
 #ifdef DEBUG
 #define EXEC_DEBUG_REPORT bit(0)
