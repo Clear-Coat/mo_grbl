@@ -51,8 +51,8 @@ typedef enum {
 
 // Serial disconnect timeout - number of idle loop iterations before motors are disabled.
 // Only counts when system is in IDLE or ALARM state (not during motion).
-// At 16MHz with tight idle loop (~50k-100k iter/sec), 1000000 ≈ 10-20 seconds.
-#define SERIAL_DISCONNECT_TIMEOUT 1000000
+// At 16MHz with tight idle loop (30k iter/sec), 1000000 ≈ 3.5-4 seconds.
+#define SERIAL_DISCONNECT_TIMEOUT 300000
 
 // Enable debug message when motors are disabled due to serial disconnect
 // #define DEBUG_SERIAL_DISCONNECT
