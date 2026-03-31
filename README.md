@@ -6,23 +6,44 @@ This project is a customized fork of [GRBL](https://github.com/gnea/grbl), tailo
 
 ### Prerequisites
 
-1. **Arduino CLI**: Ensure Arduino CLI is installed. On macOS, you can install it with Homebrew:
+1. **Chocolatey Installation**: Chocolatey is a package manager for Windows. To install it, follow these steps:
 
-```bash
-brew install arduino-cli
-```
+   - Open an elevated Command Prompt (Run as Administrator).
+   - Run the following command to install Chocolatey:
 
-Arduino AVR Core: Install the AVR core for Arduino boards:
+     ```bash
+     @"%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET \"PATH=%PATH%;%ALLUSERSPROFILE%\\chocolatey\\bin\"
+     ```
 
-```bash
-arduino-cli core install arduino:avr
-```
+2. **Arduino CLI**:
 
-Make Utility: The make utility is typically pre-installed on macOS. If not, install it:
+   - **macOS**: Ensure Arduino CLI is installed. On macOS, you can install it with Homebrew:
 
-```bash
-brew install make
-```
+   ```bash
+   brew install arduino-cli
+   ```
+
+   - **Windows**: Download the Arduino CLI from the [official Arduino CLI website](https://arduino.github.io/arduino-cli/installation/). Follow the instructions to add it to your system's PATH.
+
+3. **Arduino AVR Core**: Install the AVR core for Arduino boards:
+
+   ```bash
+   arduino-cli core install arduino:avr
+   ```
+
+4. **Make Utility**:
+
+   - **macOS**: The make utility is typically pre-installed on macOS. If not, install it:
+
+   ```bash
+   brew install make
+   ```
+
+   - **Windows**: Install `make` using Chocolatey. First, install Chocolatey, then run the following command in an elevated command prompt:
+
+   ```bash
+   choco install make
+   ```
 
 ### Building the Firmware
 

@@ -596,6 +596,7 @@ void report_realtime_status()
     if ((lim_pin_state | ctrl_pin_state | prb_pin_state) || pinch_roller_state) {
       printPgmString(PSTR("|Pn:"));
       if (prb_pin_state) { serial_write('P'); }
+      if (pinch_roller_state) { serial_write('R'); }
       if (lim_pin_state) {
         #ifdef ENABLE_DUAL_AXIS
           #if (DUAL_AXIS_SELECT == X_AXIS)
@@ -611,7 +612,6 @@ void report_realtime_status()
           if (bit_istrue(lim_pin_state,bit(X_AXIS))) { serial_write('X'); }
           if (bit_istrue(lim_pin_state,bit(Y_AXIS))) { serial_write('Y'); }
           if (bit_istrue(lim_pin_state,bit(Z_AXIS))) { serial_write('Z'); }
-          if (pinch_roller_state) { serial_write('R'); }
         #endif
       }
       if (ctrl_pin_state) {

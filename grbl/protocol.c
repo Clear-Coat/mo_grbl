@@ -156,6 +156,9 @@ void protocol_main_loop()
     // completed. In either case, auto-cycle start, if enabled, any queued moves.
     protocol_auto_cycle_start();
 
+    // Check serial connection status for motor control
+    system_check_serial_connection();
+
     protocol_execute_realtime();  // Runtime command check point.
     if (sys.abort) { return; } // Bail to main() program loop to reset system.
   }

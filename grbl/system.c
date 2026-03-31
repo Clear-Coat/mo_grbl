@@ -20,6 +20,9 @@
 
 #include "grbl.h"
 
+// Serial connection status for motor control
+volatile uint8_t sys_serial_connected = 1;        // Flag indicating serial connection status (default ON after reset)
+volatile uint32_t serial_idle_counter = 0;        // Counter for serial inactivity detection
 
 void system_init()
 {
@@ -31,6 +34,39 @@ void system_init()
   #endif
   CONTROL_PCMSK |= CONTROL_MASK;  // Enable specific pins of the Pin Change Interrupt
   PCICR |= (1 << CONTROL_INT);   // Enable Pin Change Interrupt
+  
+  // Initialize serial connection status - motors enabled after reset
+  sys_serial_connected = 1;  // Set to connected after reset (serial connection triggers reset)
+  serial_idle_counter = 0;
+}
+
+// Check serial connection status by monitoring UART activity.
+// Note: Reconnection and motor enable is handled in serial_read() for immediate response.
+// This function handles disconnect detection after idle timeout.
+void system_check_serial_connection()
+{
+  // If serial is connected, check for timeout
+  if (sys_serial_connected) {
+    // Only count towards disconnect when system is idle (not during motion/homing)
+    if (sys.state == STATE_IDLE || sys.state == STATE_ALARM) {
+      serial_idle_counter++;
+    }
+    
+    // Disconnect after extended silence while idle
+    if (serial_idle_counter > SERIAL_DISCONNECT_TIMEOUT) {
+      sys_serial_connected = 0;
+      serial_idle_counter = 0;  // Reset for next cycle
+      // Disable motors on disconnect (safety)
+      if (bit_istrue(settings.flags, BITFLAG_INVERT_ST_ENABLE)) { 
+        STEPPERS_DISABLE_PORT &= ~(1 << STEPPERS_DISABLE_BIT); 
+      } else { 
+        STEPPERS_DISABLE_PORT |= (1 << STEPPERS_DISABLE_BIT); 
+      }
+      #ifdef DEBUG_SERIAL_DISCONNECT
+        printPgmString(PSTR("[MOTOR TURNED OFF]\r\n"));
+      #endif
+    }
+  }
 }
 
 

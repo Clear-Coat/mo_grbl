@@ -64,7 +64,7 @@
 #include "stepper.h"
 #include "jog.h"
 #include "vcm.h"
-#include "spi.h"
+#include "mo_spi.h"
 
 // ---------------------------------------------------------------------------------------
 // COMPILE-TIME ERROR CHECKING OF DEFINE VALUES:

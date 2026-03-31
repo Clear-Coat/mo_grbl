@@ -48,6 +48,14 @@ typedef enum {
 
 // Serial baud rate
 // #define BAUD_RATE 230400
+
+// Serial disconnect timeout - number of idle loop iterations before motors are disabled.
+// Only counts when system is in IDLE or ALARM state (not during motion).
+// At 16MHz with tight idle loop (30k iter/sec), 1000000 ≈ 3.5-4 seconds.
+#define SERIAL_DISCONNECT_TIMEOUT 300000
+
+// Enable debug message when motors are disabled due to serial disconnect
+// #define DEBUG_SERIAL_DISCONNECT
 #define BAUD_RATE 115200
 
 // Define realtime command special characters. These characters are 'picked-off' directly from the
